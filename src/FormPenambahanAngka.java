@@ -1,4 +1,8 @@
 import javax.swing.JOptionPane;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class FormPenambahanAngka extends javax.swing.JFrame {
 
@@ -7,8 +11,100 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
      */
     public FormPenambahanAngka() {
         initComponents();
+        addInputListeners();
     }
+    
+    class NumericKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyTyped(KeyEvent evt) {
+            char c = evt.getKeyChar();
+            javax.swing.JTextField source = (javax.swing.JTextField) evt.getSource();
+            String currentText = source.getText();
 
+            // IZINKAN: Digit (0-9) dan kontrol ISO (Backspace, Delete, dll.)
+            if (Character.isDigit(c) || Character.isISOControl(c)) {
+                return; 
+            }
+
+            // IZINKAN: Tanda desimal (.)
+            if (c == '.') {
+                // Hanya izinkan jika belum ada tanda desimal
+                if (currentText.contains(".")) {
+                    evt.consume(); 
+                }
+                return;
+            }
+            
+            if (c == '-') {
+                // Hanya izinkan jika berada di posisi awal (indeks 0)
+                if (currentText.length() > 0 && source.getCaretPosition() != 0) {
+                    evt.consume(); // Abaikan jika tidak di awal
+                }
+                // Hanya izinkan jika belum ada tanda minus
+                if (currentText.contains("-")) {
+                    evt.consume(); 
+                }
+                return;
+            }
+            
+            if (c == '.') {
+                // Hanya izinkan jika belum ada tanda desimal
+                if (currentText.contains(".")) {
+                    evt.consume(); 
+                }
+                return;
+            }
+            
+            evt.consume();
+        }
+    }
+    
+    class EnterKeyFocusMover extends KeyAdapter {
+        private final java.awt.Component nextComponent;
+
+        public EnterKeyFocusMover(java.awt.Component nextComponent) {
+            this.nextComponent = nextComponent;
+        }
+
+        @Override
+        public void keyPressed(KeyEvent evt) {
+            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+                // Pindahkan fokus ke komponen berikutnya
+                nextComponent.requestFocusInWindow();
+                // Jika komponen berikutnya adalah tombol, kita juga bisa memicu aksinya
+                if (nextComponent instanceof javax.swing.JButton) {
+                    ((javax.swing.JButton) nextComponent).doClick();
+                }
+                evt.consume(); // Mencegah pemrosesan Enter lebih lanjut
+            }
+        }
+    }
+    
+    class SelectAllOnFocusAdapter extends FocusAdapter {
+        @Override
+        public void focusGained(FocusEvent evt) {
+            if (evt.getSource() instanceof javax.swing.JTextField) {
+                javax.swing.JTextField textField = (javax.swing.JTextField) evt.getSource();
+                textField.selectAll();
+            }
+        }
+    }
+    
+    private void addInputListeners() {
+        // Terapkan NumericKeyAdapter untuk validasi input
+        txtAngka1.addKeyListener(new NumericKeyAdapter()); 
+        txtAngka2.addKeyListener(new NumericKeyAdapter());
+        
+        // Terapkan EnterKeyFocusMover
+        // Enter di Angka 1 pindah ke Angka 2
+        txtAngka1.addKeyListener(new EnterKeyFocusMover(txtAngka2));
+        // Enter di Angka 2 pindah ke tombol Tambah
+        txtAngka2.addKeyListener(new EnterKeyFocusMover(btnTambah));
+        
+        // Terapkan SelectAllOnFocusAdapter untuk kemudahan input
+        txtAngka1.addFocusListener(new SelectAllOnFocusAdapter());
+        txtAngka2.addFocusListener(new SelectAllOnFocusAdapter());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -18,61 +114,18 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnKeluar = new javax.swing.JButton();
-        jLabel1 = new java.awt.Label();
-        jLabel2 = new java.awt.Label();
-        jLabel3 = new java.awt.Label();
-        txtAngka1 = new java.awt.TextField();
-        txtAngka2 = new java.awt.TextField();
-        txtHasil = new java.awt.TextField();
+        jPanel1 = new javax.swing.JPanel();
         btnTambah = new javax.swing.JButton();
         btnHapus = new javax.swing.JButton();
+        btnKeluar = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtAngka1 = new javax.swing.JTextField();
+        txtAngka2 = new javax.swing.JTextField();
+        txtHasil = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        btnKeluar.setText("Keluar");
-        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnKeluarActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("Angka 1");
-
-        jLabel2.setText("Angka 2");
-
-        jLabel3.setText("Hasil");
-
-        txtAngka1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        txtAngka1.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtAngka1FocusGained(evt);
-            }
-        });
-        txtAngka1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtAngka1ActionPerformed(evt);
-            }
-        });
-        txtAngka1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtAngka1KeyTyped(evt);
-            }
-        });
-
-        txtAngka2.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtAngka2FocusGained(evt);
-            }
-        });
-        txtAngka2.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtAngka2KeyTyped(evt);
-            }
-        });
-
-        txtHasil.setEditable(false);
-        txtHasil.setText("Hasil Yang Didapatkan");
 
         btnTambah.setText("Tambah");
         btnTambah.addActionListener(new java.awt.event.ActionListener() {
@@ -88,53 +141,88 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
             }
         });
 
+        btnKeluar.setText("Keluar");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Angka 1");
+
+        jLabel5.setText("Angka 2");
+
+        jLabel6.setText("Hasil");
+
+        txtAngka2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAngka2ActionPerformed(evt);
+            }
+        });
+
+        txtHasil.setEditable(false);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtAngka2)
+                    .addComponent(txtAngka1)
+                    .addComponent(txtHasil, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
+                .addGap(32, 32, 32)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnKeluar)
+                    .addComponent(btnHapus)
+                    .addComponent(btnTambah))
+                .addContainerGap(35, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnTambah)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(txtAngka1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(19, 19, 19)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnHapus)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5)
+                        .addComponent(txtAngka2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnKeluar, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(txtHasil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(114, 114, 114))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtHasil, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(135, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtAngka2, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-                            .addComponent(txtAngka1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnKeluar)
-                            .addComponent(btnHapus)
-                            .addComponent(btnTambah))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(45, 45, 45)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAngka1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnTambah))
-                .addGap(22, 22, 22)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnHapus)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAngka2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtHasil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnKeluar, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap(136, Short.MAX_VALUE))
+                .addGap(17, 17, 17)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
@@ -144,39 +232,17 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_btnKeluarActionPerformed
 
-    private void txtAngka1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAngka1FocusGained
-        // Variasi: Implementasi FocusListener untuk membersihkan JTextField
-        txtAngka1.setText("");
-        txtHasil.setText(""); // Sekalian bersihkan hasil
-    }//GEN-LAST:event_txtAngka1FocusGained
-
-    private void txtAngka1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAngka1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtAngka1ActionPerformed
-
-    private void txtAngka1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAngka1KeyTyped
-        char c = evt.getKeyChar();
-        // Variasi: KeyAdapter untuk membatasi input hanya angka (dan titik desimal)
-        if (!Character.isDigit(c) && c != '.' && c != evt.VK_BACK_SPACE) {
-            evt.consume(); // Abaikan input jika bukan digit, titik, atau backspace
-        }
-    }//GEN-LAST:event_txtAngka1KeyTyped
-
-    private void txtAngka2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAngka2FocusGained
-        txtAngka2.setText("");
-        txtHasil.setText("");
-    }//GEN-LAST:event_txtAngka2FocusGained
-
-    private void txtAngka2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAngka2KeyTyped
-        char c = evt.getKeyChar();
-        // Variasi: KeyAdapter untuk membatasi input hanya angka (dan titik desimal)
-        if (!Character.isDigit(c) && c != '.' && c != evt.VK_BACK_SPACE) {
-            evt.consume(); // Abaikan input jika bukan digit, titik, atau backspace
-        }
-    }//GEN-LAST:event_txtAngka2KeyTyped
-
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         try {
+            // >> TAMBAHAN: Periksa input kosong sebelum parsing
+            if (txtAngka1.getText().trim().isEmpty() || txtAngka2.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                    "Kedua angka harus diisi!",
+                    "Input Kosong",
+                    JOptionPane.WARNING_MESSAGE);
+                txtAngka1.requestFocus();
+                return;
+            }
 
             double angka1 = Double.parseDouble(txtAngka1.getText());
             double angka2 = Double.parseDouble(txtAngka2.getText());
@@ -188,17 +254,17 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
             txtHasil.setText(String.valueOf(hasil));
 
         } catch (NumberFormatException e) {
-            // Tampilkan error jika input bukan numerik
+            // >> PERBAIKAN: Pesan error diperbarui agar lebih informatif
             JOptionPane.showMessageDialog(this,
-                "Input harus berupa angka!",
+                "Input tidak valid. Pastikan hanya angka, tanda minus di depan, atau satu titik desimal yang digunakan.",
                 "Kesalahan Input",
                 JOptionPane.ERROR_MESSAGE);
-            // Deskripsi Program: Mengarahkan fokus ke TextField angka pertama
-            txtAngka1.requestFocus(); // Arahkan fokus kembali
-            txtAngka1.setText(""); // Opsional: Bersihkan input yang salah
+            
+            // Bersihkan dan fokuskan kembali
+            txtAngka1.requestFocus(); 
+            txtAngka1.setText(""); 
             txtAngka2.setText("");
             txtHasil.setText("");
-
         }
     }//GEN-LAST:event_btnTambahActionPerformed
 
@@ -210,6 +276,10 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
         // Deskripsi Program: Mengarahkan fokus ke TextField angka pertama
         txtAngka1.requestFocus();
     }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void txtAngka2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAngka2ActionPerformed
+        btnTambahActionPerformed(evt);
+    }//GEN-LAST:event_txtAngka2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -237,7 +307,22 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(FormPenambahanAngka.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FormPenambahanAngka.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FormPenambahanAngka.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FormPenambahanAngka.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FormPenambahanAngka.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -250,11 +335,12 @@ public class FormPenambahanAngka extends javax.swing.JFrame {
     private javax.swing.JButton btnHapus;
     private javax.swing.JButton btnKeluar;
     private javax.swing.JButton btnTambah;
-    private java.awt.Label jLabel1;
-    private java.awt.Label jLabel2;
-    private java.awt.Label jLabel3;
-    private java.awt.TextField txtAngka1;
-    private java.awt.TextField txtAngka2;
-    private java.awt.TextField txtHasil;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField txtAngka1;
+    private javax.swing.JTextField txtAngka2;
+    private javax.swing.JTextField txtHasil;
     // End of variables declaration//GEN-END:variables
 }
